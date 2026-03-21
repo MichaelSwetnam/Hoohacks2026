@@ -6,7 +6,7 @@ class Menu(Scene):
     testButton: Button
     
     def __init__(self):
-        self.testButton = Button()
+        self.testButton = Button(200,50)
         pass
 
     def draw(self, screen):

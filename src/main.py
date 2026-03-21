@@ -1,6 +1,6 @@
 # Example file showing a circle moving on screen
 import pygame
-from scenes.menu import Menu
+from scenes.start_menu import Menu
 from scenes.end_game import EndGame
 from scene import Scene
 
@@ -12,7 +12,7 @@ clock = pygame.time.Clock()
 running = True
 dt = 0
 
-current_scene: Scene = EndGame()
+current_scene: Scene = Menu()
 while running:
     # poll for events
     # pygame.QUIT event means the user clicked X to close your window
