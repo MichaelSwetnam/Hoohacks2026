@@ -3,6 +3,8 @@ SCREEN_HEIGHT = 720
 
 CENTER_OF_SCREEN = (SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)
 
+TIME_BAR_COLOR = (95, 159, 250)
+
 HEART_ALIVE = "heart.png"
 HEART_DEAD = "heart_dead.png"
 WHEAT_FIELDS_BACKGROUND = "wheat_fields.jpg"

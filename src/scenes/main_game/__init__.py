@@ -1,7 +1,7 @@
 from components.Button import Button
 from scene import SceneName, Scene
 
-from constants import *
+from constants import SCREEN_WIDTH, TIME_BAR_COLOR
 from scenes.main_game.health import draw_health
 
 from components.LoadingBar import LoadingBar
@@ -29,7 +29,7 @@ class MainGame(Scene):
         self.player_health = self.player_max_health
         self.enemy_health = self.enemy_max_health
 
-        self.loading_bar = LoadingBar(20, 70, SCREEN_WIDTH - 40, 40)
+        self.loading_bar = LoadingBar(20, 70, SCREEN_WIDTH - 40, 40, fill_color=TIME_BAR_COLOR)
         self.loading_bar.set_progress(0.7)
 
     def draw(self, screen, events):
