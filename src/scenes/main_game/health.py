@@ -3,13 +3,8 @@ import pygame
 from pygame import Surface
 from pygame import Vector2
 
-from resource_path import resource_path
 from constants import *
-
-def load_image(name: str, size: Vector2) -> pygame.Surface:
-    resource = pygame.image.load(resource_path(name))
-    scaled = pygame.transform.scale(resource, (size.x, size.y))
-    return scaled    
+from load_image import load_image   
 
 HEART_PATH = "heart.png"
 HEART_DEAD_PATH = "heart_dead.png"
