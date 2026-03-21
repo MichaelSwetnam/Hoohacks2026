@@ -57,7 +57,7 @@ class MainGame(Scene):
         self.playerHealth = len(PLAYER_HEARTS)
         self.enemyHealth = len(ENEMY_HEARTS)
 
-    def draw(self, screen):
+    def draw(self, screen, events):
         # Draw hearts
         for i in range(0, len(PLAYER_HEARTS)):
             isHeartAlive =  i < self.playerHealth

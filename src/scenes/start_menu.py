@@ -9,7 +9,7 @@ class StartMenu(Scene):
         self.testButton = Button(200,50)
         pass
 
-    def draw(self, screen):
+    def draw(self, screen, events):
         pygame.draw.circle(screen, "red", pygame.Vector2(15, 15), 20)
         self.testButton.draw(screen)
     # if button is clicked go to next secene
