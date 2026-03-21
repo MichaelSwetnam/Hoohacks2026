@@ -1,4 +1,4 @@
-from Button import Button 
+from components.Button import Button
 from scene import Scene
 
 from constants import *
@@ -39,14 +39,14 @@ class MainGame(Scene):
         self.loading_bar.draw(screen, events)
 
         # Test buttons
-        test_button = Button(500, 500, 40, 40, "Hit Player")
-        test_button.draw(screen, events)
-        if test_button.isClicked:
+        hit_player = Button(500, 500, 40, 40, "Hit Player")
+        hit_player.draw(screen, events)
+        if hit_player.isClicked:
             self.player_health -= 1
 
-        test_button_2 = Button(600, 500, 40, 40, "Hit Enemy")
-        test_button_2.draw(screen, events)
-        if test_button_2.isClicked:
+        hit_enemy = Button(600, 500, 40, 40, "Hit Enemy")
+        hit_enemy.draw(screen, events)
+        if hit_enemy.isClicked:
             self.enemy_health -= 1
                                
         # Update state

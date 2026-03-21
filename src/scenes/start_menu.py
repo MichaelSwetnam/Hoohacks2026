@@ -1,4 +1,4 @@
-from Button import Button
+from components.Button import Button
 from scene import Scene
 from scenes.main_game import MainGame
 import pygame
