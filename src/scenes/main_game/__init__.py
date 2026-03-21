@@ -7,52 +7,60 @@ from scenes.main_game.health import draw_health
 from scenes.end_game_failure import EndGame as EndGameFailure
 from scenes.end_game_success import EndGame as EndGameSuccess
 
+from components.LoadingBar import LoadingBar
+
 class MainGame(Scene):   
     # Game state 
-    isPlayerAlive: bool
-    isEnemyAlive: bool
+    is_player_alive: bool
+    is_enemy_alive: bool
 
     # X out of 3 hearts
-    playerMaxHealth: int
-    enemyMaxHealth: int
-    playerHealth: int
-    enemyHealth: int
+    player_max_health: int
+    enemy_max_health: int
+    player_health: int
+    enemy_health: int
+
+    loading_bar: LoadingBar
+
 
     def __init__(self):
-        self.isPlayerAlive = True
-        self.isEnemyAlive = True
+        self.is_player_alive = True
+        self.is_enemy_alive = True
 
-        self.playerMaxHealth = 3
-        self.enemyMaxHealth = 3
-        self.playerHealth = self.playerMaxHealth
-        self.enemyHealth = self.enemyMaxHealth
+        self.player_max_health = 3
+        self.enemy_max_health = 3
+        self.player_health = self.player_max_health
+        self.enemy_health = self.enemy_max_health
+
+        self.loading_bar = LoadingBar(20, 70, SCREEN_WIDTH - 40, 40)
 
     def draw(self, screen, events):
-        draw_health(screen, self.playerMaxHealth, self.enemyMaxHealth, self.playerHealth, self.enemyHealth)
+        draw_health(screen, self.player_max_health, self.enemy_max_health, self.player_health, self.enemy_health)
+        self.loading_bar.draw(screen, events)
 
         # Test buttons
         test_button = Button(500, 500, 40, 40)
         test_button.draw(screen, events)
         if test_button.isClicked:
-            self.playerHealth -= 1
+            self.player_health -= 1
 
         test_button_2 = Button(600, 500, 40, 40)
         test_button_2.draw(screen, events)
         if test_button_2.isClicked:
-            self.enemyHealth -= 1
+            self.enemy_health -= 1
                                
         # Update state
-        if self.playerHealth <= 0:
-            self.isPlayerAlive = False
+        if self.player_health <= 0:
+            self.is_player_alive = False
 
-        if self.enemyHealth <= 0:
-            self.isEnemyAlive = False
+        if self.enemy_health <= 0:
+            self.is_enemy_alive = False
 
     def next_scene(self):
-        if not self.isPlayerAlive:
+        if not self.is_player_alive:
             return EndGameFailure()
 
-        if not self.isEnemyAlive:
+        if not self.is_enemy_alive:
             return EndGameSuccess()
 
         return super().next_scene()
