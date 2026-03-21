@@ -8,7 +8,7 @@ class EndMenu(Scene):
     __has_won: bool
     
     def __init__(self, has_won: bool):
-        self.__end_button = Button(540, 335, 200,50, "Return to Start")
+        self.__end_button = Button(540, 335, 250,50, "Return to Start")
         self.__has_won = has_won
         self.font = pygame.font.SysFont(None, 72)
 
