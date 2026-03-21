@@ -4,10 +4,12 @@ from scenes.start_menu import Menu
 from scenes.end_game import EndGame
 from scene import Scene
 
+SCREEN_WIDTH = 1280
+SCREEN_HEIGHT = 720
 
 # pygame setup
 pygame.init()
-screen = pygame.display.set_mode((1280, 720))
+screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 clock = pygame.time.Clock()
 running = True
 dt = 0
