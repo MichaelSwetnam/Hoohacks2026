@@ -13,11 +13,12 @@ clock = pygame.time.Clock()
 running = True
 dt = 0
 
-current_scene: Scene = StartMenu()
+current_scene: Scene = StartMenu() 
 while running:
     # poll for events
     # pygame.QUIT event means the user clicked X to close your window
-    for event in pygame.event.get():
+    events = pygame.event.get()
+    for event in events:
         if event.type == pygame.QUIT:
             running = False
 
@@ -25,7 +26,7 @@ while running:
     screen.fill("black")
 
     # Draw the scene
-    current_scene.draw(screen)
+    current_scene.draw(screen, events)
     next = current_scene.next_scene()
     if next is not None:
         current_scene = next
@@ -37,5 +38,6 @@ while running:
     # dt is delta time in seconds since last frame, used for framerate-
     # independent physics.
     dt = clock.tick(60) / 1000
+
 
 pygame.quit()
