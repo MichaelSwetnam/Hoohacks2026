@@ -2,7 +2,7 @@ from Button import Button
 from scene import Scene
 import pygame
 
-class Menu(Scene):
+class StartMenu(Scene):
     testButton: Button
     
     def __init__(self):
