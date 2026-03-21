@@ -1,6 +1,6 @@
 from components.Button import Button
 from scene import Scene, SceneName
-import pygame
+from draw_menu_background import draw_menu_background
 
 class StartMenu(Scene):
     __start_button: Button
@@ -10,6 +10,8 @@ class StartMenu(Scene):
         pass
 
     def draw(self, screen, events):
+        draw_menu_background(screen)
+        
         self.__start_button.draw(screen, events)
 
     def next_scene(self):

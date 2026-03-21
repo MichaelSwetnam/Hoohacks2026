@@ -1,7 +1,7 @@
 from components.Button import Button
 from scene import Scene, SceneName
 import pygame
-from constants import CENTER_OF_SCREEN
+from draw_menu_background import draw_menu_background
 
 class EndMenu(Scene):
     __end_button: Button
@@ -14,6 +14,8 @@ class EndMenu(Scene):
 
 
     def draw(self, screen, events):
+        draw_menu_background(screen)
+
         label = None
         if self.__has_won: 
             label = self.font.render("WINNER!", True, (0,255,0)) # green win 
