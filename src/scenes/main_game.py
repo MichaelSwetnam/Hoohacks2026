@@ -24,7 +24,7 @@ HEART_SIZE = 40
 PLAYER_HEARTS = [
     Vector2(20, HEART_HEIGHT),
     Vector2(60, HEART_HEIGHT),
-    # Vector2(100, HEART_HEIGHT)
+    Vector2(100, HEART_HEIGHT)
 ]
 
 ENEMY_HEARTS = [
