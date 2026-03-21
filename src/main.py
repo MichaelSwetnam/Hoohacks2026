@@ -1,7 +1,10 @@
 # Example file showing a circle moving on screen
 import pygame
 from scenes.start_menu import StartMenu
-from scene import Scene
+from scenes.main_game import MainGame
+from scenes.end_menu import EndMenu
+
+from scene import Scene, SceneName
 
 SCREEN_WIDTH = 1280
 SCREEN_HEIGHT = 720
@@ -12,6 +15,16 @@ screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 clock = pygame.time.Clock()
 running = True
 dt = 0
+
+def get_scene(sceneRef: SceneName):
+    if sceneRef == SceneName.START_MENU:
+        return StartMenu()
+    elif sceneRef == SceneName.MAIN_GAME:
+        return MainGame()
+    elif sceneRef == SceneName.EXIT_MENU_LOST:
+        return EndMenu(False)
+    else:
+        return EndMenu(True)
 
 current_scene: Scene = StartMenu() 
 while running:
@@ -29,7 +42,7 @@ while running:
     current_scene.draw(screen, events)
     next = current_scene.next_scene()
     if next is not None:
-        current_scene = next
+        current_scene = get_scene(next)
 
     # flip() the display to put your work on screen
     pygame.display.flip()

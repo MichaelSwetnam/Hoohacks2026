@@ -1,6 +1,5 @@
 from components.Button import Button
-from scene import Scene
-from scenes.main_game import MainGame
+from scene import Scene, SceneName
 import pygame
 
 class StartMenu(Scene):
@@ -11,11 +10,10 @@ class StartMenu(Scene):
         pass
 
     def draw(self, screen, events):
-        pygame.draw.circle(screen, "red", pygame.Vector2(15, 15), 20)
         self.__start_button.draw(screen, events)
 
     def next_scene(self):
         if self.__start_button.isClicked:
-            return MainGame()
+            return SceneName.MAIN_GAME
 
     pass

@@ -1,11 +1,8 @@
 from components.Button import Button
-from scene import Scene
+from scene import SceneName, Scene
 
 from constants import *
 from scenes.main_game.health import draw_health
-
-from scenes.end_game_failure import EndGame as EndGameFailure
-from scenes.end_game_success import EndGame as EndGameSuccess
 
 from components.LoadingBar import LoadingBar
 
@@ -59,10 +56,10 @@ class MainGame(Scene):
 
     def next_scene(self):
         if not self.is_player_alive:
-            return EndGameFailure()
+            return SceneName.EXIT_MENU_LOST
 
         if not self.is_enemy_alive:
-            return EndGameSuccess()
+            return SceneName.EXIT_MENU_WON
 
         return super().next_scene()
     
