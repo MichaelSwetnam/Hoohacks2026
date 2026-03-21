@@ -33,6 +33,7 @@ class MainGame(Scene):
         self.enemy_health = self.enemy_max_health
 
         self.loading_bar = LoadingBar(20, 70, SCREEN_WIDTH - 40, 40)
+        self.loading_bar.set_progress(0.7)
 
     def draw(self, screen, events):
         draw_health(screen, self.player_max_health, self.enemy_max_health, self.player_health, self.enemy_health)
