@@ -1,21 +1,21 @@
 from Button import Button
 from scene import Scene
+from scenes.main_game import MainGame
 import pygame
 
 class StartMenu(Scene):
-    testButton: Button
+    __start_button: Button
     
     def __init__(self):
-        self.testButton = Button(540, 335, 200,50, "START")
+        self.__start_button = Button(540, 335, 200,50, "START")
         pass
 
     def draw(self, screen, events):
         pygame.draw.circle(screen, "red", pygame.Vector2(15, 15), 20)
-        self.testButton.draw(screen, events)
-
-    
+        self.__start_button.draw(screen, events)
 
     def next_scene(self):
-        return super().next_scene()
+        if self.__start_button.isClicked:
+            return MainGame()
 
     pass
