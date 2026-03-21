@@ -6,3 +6,7 @@ CENTER_OF_SCREEN = (SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)
 HEART_ALIVE = "heart.png"
 HEART_DEAD = "heart_dead.png"
 WHEAT_FIELDS_BACKGROUND = "wheat_fields.jpg"
+
+LOGO = "logo.png"
+LOGO_WIDTH = 240 * 3
+LOGO_HEIGHT = 60 * 3
