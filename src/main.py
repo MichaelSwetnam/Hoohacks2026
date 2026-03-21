@@ -1,7 +1,6 @@
 # Example file showing a circle moving on screen
 import pygame
 from scenes.start_menu import Menu
-from scenes.end_game import EndGame
 from scene import Scene
 
 SCREEN_WIDTH = 1280
