@@ -18,6 +18,26 @@ def __draw_heart(screen: Surface, position: Vector2, isAlive: bool):
     else:
         screen.blit(DEAD_HEART_IMAGE, (position.x, position.y))
 
+def calculate_player_bounding(pMaxHealth: int):
+    # Player hearts start at x = 20 and extend rightward
+    x = 20
+    y = HEART_HEIGHT
+
+    width  = pMaxHealth * HEART_SIZE
+    height = HEART_SIZE
+
+    return pygame.Rect(x, y, width, height)
+
+def calculate_enemy_bounding(eMaxHealth: int):
+    # Enemy hearts start at SCREEN_WIDTH - 60 and extend leftward
+    # The leftmost heart is at:
+    x = (SCREEN_WIDTH - 60) - (eMaxHealth - 1) * HEART_SIZE
+    y = HEART_HEIGHT
+
+    width  = eMaxHealth * HEART_SIZE
+    height = HEART_SIZE
+
+    return pygame.Rect(x, y, width, height)
 
 def draw_health(screen: pygame.Surface, playerMaxHealth: int, enemyMaxHealth: int, playerHealth: int, enemyHealth: int):
     # Draw hearts

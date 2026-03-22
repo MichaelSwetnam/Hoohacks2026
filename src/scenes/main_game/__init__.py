@@ -4,7 +4,7 @@ from components.Button import Button
 from scene import SceneName, Scene
 
 from constants import SCREEN_WIDTH, SCREEN_HEIGHT, TIME_BAR_COLOR
-from scenes.main_game.health import draw_health
+from scenes.main_game.health import draw_health, calculate_enemy_bounding, calculate_player_bounding, HEART_SIZE
 from scenes.main_game.character import Character, SpriteName
 from load_image import load_image
 
@@ -12,6 +12,7 @@ from components.LoadingBar import LoadingBar
 
 
 BACKGROUND = load_image("saloon_night.jpg", pygame.Vector2(SCREEN_WIDTH, SCREEN_HEIGHT))
+LOADING_BAR_MARGIN = 20
 
 class MainGame(Scene):   
     # Game state 
@@ -43,7 +44,18 @@ class MainGame(Scene):
         self.__player_health = self.__player_max_health
         self.__enemy_health = self.__enemy_max_health
 
-        self.__loading_bar = LoadingBar(20, 70, SCREEN_WIDTH - 40, 40, fill_color=TIME_BAR_COLOR)
+        player_heart_bounding = calculate_player_bounding(self.__player_max_health)
+        enemy_heart_bounding = calculate_enemy_bounding(self.__enemy_max_health)
+
+        loading_bar_x = player_heart_bounding.w + player_heart_bounding.x + LOADING_BAR_MARGIN
+        self.__loading_bar = LoadingBar(
+            player_heart_bounding.w + player_heart_bounding.x + LOADING_BAR_MARGIN,
+            player_heart_bounding.y,
+            enemy_heart_bounding.x - LOADING_BAR_MARGIN - loading_bar_x,
+            HEART_SIZE,
+            fill_color=TIME_BAR_COLOR
+        )
+        
         self.__loading_bar.set_progress(0.7)
 
     def draw(self, screen, events):
@@ -62,7 +74,7 @@ class MainGame(Scene):
             # This hit will cause the player's health to become 0 -- final hit
             final_hit = self.__player_health <= 1
             self.__player_health -= 1
-            
+
             self.__player.hit(final_hit)
             self.__enemy.attack()
 
