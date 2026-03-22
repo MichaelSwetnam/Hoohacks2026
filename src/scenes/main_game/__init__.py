@@ -1,11 +1,17 @@
+import pygame
+
 from components.Button import Button
 from scene import SceneName, Scene
 
-from constants import SCREEN_WIDTH, TIME_BAR_COLOR
+from constants import SCREEN_WIDTH, SCREEN_HEIGHT, TIME_BAR_COLOR
 from scenes.main_game.health import draw_health
 from scenes.main_game.character import Character, SpriteName
+from load_image import load_image
 
 from components.LoadingBar import LoadingBar
+
+
+BACKGROUND = load_image("saloon_night.jpg", pygame.Vector2(SCREEN_WIDTH, SCREEN_HEIGHT))
 
 class MainGame(Scene):   
     # Game state 
@@ -41,6 +47,7 @@ class MainGame(Scene):
         self.__loading_bar.set_progress(0.7)
 
     def draw(self, screen, events):
+        screen.blit(BACKGROUND, (0, 0))
         draw_health(screen, self.__player_max_health, self.__enemy_max_health, self.__player_health, self.__enemy_health)
         self.__loading_bar.draw(screen, events)
         self.__enemy.draw(screen, events)

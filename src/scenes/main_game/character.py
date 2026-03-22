@@ -2,6 +2,8 @@ import pygame
 import enum
 from constants import CHARACTER_SIZE, CHARACTER_SIDE_PADDING, SCREEN_HEIGHT, SCREEN_WIDTH
 from random import random
+from load_image import load_image
+
 # Both should be equall yseparated
 # [ X  X ]
 
@@ -16,9 +18,48 @@ SIZE_Y = CHARACTER_SIZE[1]
 class SpriteName(enum.Enum):
     PLAYER = 1
     ENEMY_1 = 2
-    ENEMY_2 = 2
-    ENEMY_3 = 3
+    ENEMY_2 = 3
+    ENEMY_3 = 4
 
+class SpriteState(enum.Enum):
+    IDLE = 1
+    DAMAGE = 2
+    SHOOT = 3
+
+def get_sprite_state_suffix(state: SpriteState) -> str: 
+    if state == SpriteState.IDLE:
+        return "_idle.png"
+    elif state == SpriteState.DAMAGE:
+        return "_damage.png"
+    else:
+        return "_shoot.png"
+
+def get_sprite_prefix(spriteName: SpriteName) -> str:
+    if spriteName == SpriteName.PLAYER:
+        return "player"
+    elif spriteName == SpriteName.ENEMY_1:
+        return "enemy1"
+    elif spriteName == SpriteName.ENEMY_2:
+        return "enemy2"
+    else:
+        return "enemy3"
+
+ASSET_CACHE: dict[str, pygame.Surface] = {}
+def get_sprite_asset(name: SpriteName, state: SpriteState, flipped: bool) -> pygame.Surface:    
+    """ Important! Flipped is only processed the first time a surface is loaded. On repeated loads it will STAY flipped or not flipped"""
+
+    asset_name = get_sprite_prefix(name) + get_sprite_state_suffix(state)
+
+    # Get from cache
+    if asset_name in ASSET_CACHE:
+        return ASSET_CACHE[asset_name]
+
+    # Load sprite
+    surface = load_image(asset_name, pygame.Vector2(SIZE_X, SIZE_Y))
+    if flipped:
+        surface = pygame.transform.flip(surface, flipped, False)
+
+    return surface
 
 ENEMY_RECT = pygame.Rect(
     SCREEN_WIDTH - CHARACTER_SIDE_PADDING - SIZE_X,
@@ -42,6 +83,7 @@ def lerp(a: pygame.Vector2, b: pygame.Vector2, t: float):
 
 class Character:
     __sprite: SpriteName
+    __state: SpriteState
     __flipped: bool
     __rect: pygame.Rect
 
@@ -50,6 +92,8 @@ class Character:
 
     def __init__(self, sprite: SpriteName):
         self.__sprite = sprite
+        self.__state = SpriteState.IDLE
+
         if sprite == SpriteName.PLAYER:
             self.__flipped = False
             self.__rect = PLAYER_RECT
@@ -89,4 +133,6 @@ class Character:
         )
 
         color = (0, 255, 0) if self.__sprite == SpriteName.PLAYER else (255, 0, 0)
-        pygame.draw.rect(screen, color, position_rect)
+        
+        screen.blit(get_sprite_asset(self.__sprite, self.__state, self.__flipped), position_rect)
+        # pygame.draw.rect(screen, color, position_rect)
