@@ -11,6 +11,7 @@ SCREEN_HEIGHT = 720
 
 # pygame setup
 pygame.init()
+pygame.display.set_caption("Type Faster")
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 clock = pygame.time.Clock()
 running = True
