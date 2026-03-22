@@ -53,19 +53,28 @@ class MainGame(Scene):
         self.__enemy.draw(screen, events)
         self.__player.draw(screen, events)
 
+        is_game_over = self.__player_health <= 0 or self.__enemy_health <= 0
+
         # Test buttons
         hit_player = Button(500, 500, 40, 40, "Hit Player")
         hit_player.draw(screen, events)
-        if hit_player.isClicked:
+        if hit_player.isClicked and not is_game_over:
+            # This hit will cause the player's health to become 0 -- final hit
+            final_hit = self.__player_health <= 1
             self.__player_health -= 1
-            self.__player.hit()
+            
+            self.__player.hit(final_hit)
             self.__enemy.attack()
 
         hit_enemy = Button(600, 500, 40, 40, "Hit Enemy")
         hit_enemy.draw(screen, events)
-        if hit_enemy.isClicked:
+        if hit_enemy.isClicked and not is_game_over:
+            # This hit will cause the enemy's health to become 0 -- final hit
+
+            final_hit = self.__enemy_health <= 1
             self.__enemy_health -= 1
-            self.__enemy.hit()
+
+            self.__enemy.hit(final_hit)
             self.__player.attack()
                                
         # Update state
@@ -76,6 +85,10 @@ class MainGame(Scene):
             self.__is_enemy_alive = False
 
     def next_scene(self):
+        # Don't advance until animations are done
+        if self.__enemy.is_animation_running() or self.__player.is_animation_running():
+            return None
+
         if not self.__is_player_alive:
             return SceneName.EXIT_MENU_LOST
 
