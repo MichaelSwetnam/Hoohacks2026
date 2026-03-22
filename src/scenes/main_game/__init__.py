@@ -6,7 +6,8 @@ from load_image import load_image
 from draw_menu_background import draw_menu_background
 from components.Button import Button
 from components.LoadingBar import LoadingBar
-from constants import SCREEN_WIDTH, SCREEN_HEIGHT, CHARACTER_SIZE, HEART_ALIVE, HEART_DEAD
+from constants import SCREEN_WIDTH, SCREEN_HEIGHT, HEART_ALIVE, HEART_DEAD
+from scenes.main_game.character import Character, SpriteName
 
 # ---------------------------------------------------------------------------
 # Insult pool — also used as typing prompts
@@ -24,35 +25,13 @@ INSULTS = [
 
 TYPING_TIME = 5.0
 
-# How long the shoot / damage pose is held before snapping back to idle (ms)
-POSE_HOLD_MS = 600
-
-PLAYER_X = 150
-ENEMY_X  = 900
-COWBOY_Y = 380
-DISPLAY_SIZE = (200, 200)
-
 PLAYER_BUBBLE_CX = 250
 ENEMY_BUBBLE_CX  = 1000
 BUBBLE_Y = 150
 
 # ---------------------------------------------------------------------------
-# Pre-load all sprites at module level
+# Pre-load heart assets
 # ---------------------------------------------------------------------------
-_SZ = Vector2(*DISPLAY_SIZE)
-
-_player_sprites = {
-    "idle":   load_image("player_idle.png",   _SZ),
-    "shoot":  load_image("player_shoot.png",  _SZ),
-    "damage": load_image("player_damage.png", _SZ),
-}
-
-_enemy_sprites = {
-    "idle":   load_image("enemy1_idle.png",   _SZ),
-    "shoot":  load_image("enemy1_shoot.png",  _SZ),
-    "damage": load_image("enemy1_damage.png", _SZ),
-}
-
 _heart_img  = load_image(HEART_ALIVE, Vector2(40, 40))
 _dead_heart = load_image(HEART_DEAD,  Vector2(40, 40))
 
@@ -62,7 +41,6 @@ _dead_heart = load_image(HEART_DEAD,  Vector2(40, 40))
 # ---------------------------------------------------------------------------
 def draw_speech_bubble(screen: pygame.Surface, text: str, font: pygame.font.Font,
                         center_x: int, y: int, color=(255, 255, 255)) -> None:
-    """Draw a comic-style speech bubble with a downward-pointing tail."""
     PAD = 12
     text_surf = font.render(text, True, (0, 0, 0))
     bw = max(200, text_surf.get_width() + PAD * 2)
@@ -70,21 +48,16 @@ def draw_speech_bubble(screen: pygame.Surface, text: str, font: pygame.font.Font
 
     rect = pygame.Rect(center_x - bw // 2, y, bw, bh)
 
-    # Body
     pygame.draw.rect(screen, color, rect, border_radius=16)
     pygame.draw.rect(screen, (160, 160, 160), rect, width=2, border_radius=16)
 
-    # Tail — downward triangle centred under the bubble
-    tail_cx  = center_x
-    tail_top = rect.bottom
     tail_pts = [
-        (tail_cx - 10, tail_top),
-        (tail_cx + 10, tail_top),
-        (tail_cx,      tail_top + 14),
+        (center_x - 10, rect.bottom),
+        (center_x + 10, rect.bottom),
+        (center_x,      rect.bottom + 14),
     ]
     pygame.draw.polygon(screen, color, tail_pts)
 
-    # Text
     screen.blit(text_surf, (rect.x + PAD, rect.y + PAD))
 
 
@@ -97,25 +70,20 @@ class MainGame(Scene):
         # ── Game state ──────────────────────────────────────────────────────
         self.__player_hearts   = 3
         self.__enemy_hearts    = 3
-        self.__phase           = "dialogue"   # "dialogue" | "typing"
+        self.__phase           = "dialogue"
         self.__round           = 0
         self.__next_scene_name = None
 
-        self.__current_insult  = ""
-        self.__typed_text      = ""
-        self.__time_left       = TYPING_TIME
-
-        # ── Sprite pose state ───────────────────────────────────────────────
-        # Pose is "idle" | "shoot" | "damage"; snaps back to idle after POSE_HOLD_MS
-        self.__player_pose      = "idle"
-        self.__enemy_pose       = "idle"
-        self.__player_pose_tick = 0
-        self.__enemy_pose_tick  = 0
-
-        # ── Timer baseline ───────────────────────────────────────────────────
+        self.__current_insult = ""
+        self.__typed_text     = ""
+        self.__time_left      = TYPING_TIME
         self._last_tick: int | None = None
 
-        # ── UI components ───────────────────────────────────────────────────
+        # ── Characters (use existing Character class) ────────────────────────
+        self.__player = Character(SpriteName.PLAYER)
+        self.__enemy  = Character(SpriteName.ENEMY_1)
+
+        # ── UI ───────────────────────────────────────────────────────────────
         self.__fight_button = Button(
             SCREEN_WIDTH // 2 - 100, 600, 200, 50, "FIGHT BACK"
         )
@@ -134,9 +102,11 @@ class MainGame(Scene):
 
     def draw(self, screen: pygame.Surface, events: list[pygame.event.Event]) -> None:
         draw_menu_background(screen)
-        self.__update_poses()
         self.__draw_hearts(screen)
-        self.__draw_cowboys(screen)
+
+        # Character.draw() handles sprite state + shake animation internally
+        self.__player.draw(screen, events)
+        self.__enemy.draw(screen, events)
 
         if self.__phase == "dialogue":
             self.__draw_dialogue_phase(screen, events)
@@ -158,12 +128,12 @@ class MainGame(Scene):
     def __resolve_round(self, success: bool) -> None:
         if success:
             self.__enemy_hearts -= 1
-            self.__set_pose("player", "shoot")
-            self.__set_pose("enemy",  "damage")
+            self.__player.attack()
+            self.__enemy.hit(final_hit=self.__enemy_hearts <= 0)
         else:
             self.__player_hearts -= 1
-            self.__set_pose("player", "damage")
-            self.__set_pose("enemy",  "shoot")
+            self.__enemy.attack()
+            self.__player.hit(final_hit=self.__player_hearts <= 0)
 
         self.__typed_text = ""
         self.__round += 1
@@ -180,24 +150,6 @@ class MainGame(Scene):
         elif self.__enemy_hearts <= 0:
             self.__next_scene_name = SceneName.EXIT_MENU_WON
 
-    # ── Pose helpers ─────────────────────────────────────────────────────────
-
-    def __set_pose(self, who: str, pose: str) -> None:
-        now = pygame.time.get_ticks()
-        if who == "player":
-            self.__player_pose      = pose
-            self.__player_pose_tick = now
-        else:
-            self.__enemy_pose       = pose
-            self.__enemy_pose_tick  = now
-
-    def __update_poses(self) -> None:
-        now = pygame.time.get_ticks()
-        if self.__player_pose != "idle" and now - self.__player_pose_tick >= POSE_HOLD_MS:
-            self.__player_pose = "idle"
-        if self.__enemy_pose != "idle" and now - self.__enemy_pose_tick >= POSE_HOLD_MS:
-            self.__enemy_pose = "idle"
-
     # ── Draw helpers ──────────────────────────────────────────────────────────
 
     def __draw_hearts(self, screen: pygame.Surface) -> None:
@@ -207,10 +159,6 @@ class MainGame(Scene):
         for i in range(3):
             img = _heart_img if i < self.__enemy_hearts else _dead_heart
             screen.blit(img, (1150 + i * 50, 20))
-
-    def __draw_cowboys(self, screen: pygame.Surface) -> None:
-        screen.blit(_player_sprites[self.__player_pose], (PLAYER_X, COWBOY_Y))
-        screen.blit(_enemy_sprites[self.__enemy_pose],   (ENEMY_X,  COWBOY_Y))
 
     # ── Dialogue phase ────────────────────────────────────────────────────────
 
@@ -246,7 +194,8 @@ class MainGame(Scene):
             self.__resolve_round(success=False)
 
     def __draw_input_box(self, screen: pygame.Surface) -> None:
-        box = pygame.Rect(PLAYER_X, 310, 340, 44)
+        # Positioned below the player speech bubble
+        box = pygame.Rect(60, 310, 380, 44)
         pygame.draw.rect(screen, (30, 30, 30), box, border_radius=6)
         pygame.draw.rect(screen, (200, 200, 200), box, width=2, border_radius=6)
         text_surf = self.__type_font.render(self.__typed_text, True, (255, 255, 255))
