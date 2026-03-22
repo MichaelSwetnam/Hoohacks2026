@@ -15,7 +15,7 @@ class Decision(Scene):
         self.__title_font  = pygame.font.SysFont("couriernew", 32, bold=True)
         self.__insult_font = pygame.font.SysFont("couriernew", 24, bold=True)
 
-        self.__sorry_button   = Button(350, 560, 180, 50, "APOLOGISE")
+        self.__sorry_button   = Button(350, 560, 210, 50, "APOLOGISE")
         self.__insult_button  = Button(750, 560, 180, 50, "INSULT")
 
         self.__cowboy_responded = False   # flips True after player picks
