@@ -20,7 +20,7 @@ def get_scene(sceneRef: SceneName):
     if sceneRef == SceneName.START_MENU:
         return StartMenu()
     elif sceneRef == SceneName.MAIN_GAME:
-        return MainGame()
+        return MainGame(1)
     elif sceneRef == SceneName.EXIT_MENU_LOST:
         return EndMenu(False)
     else:
