@@ -3,6 +3,7 @@ from pygame import Vector2
 from scene import Scene, SceneName
 from load_image import load_image
 from components.Button import Button
+from constants import SCREEN_WIDTH, SCREEN_HEIGHT, CENTER_OF_SCREEN
 
 OLD_PAPER = load_image("oldpaper.png", Vector2(800, 500))
 
@@ -18,12 +19,22 @@ STORY_LINES = [
     "He don't look too pleased about it.",
 ]
 
+CONTINUE_Y = 510
+CONTINUE_WIDTH = 220
+CONTINUE_HEIGHT = 50
+
 class Narrator(Scene):
 
     def __init__(self):
         self.__font = pygame.font.SysFont("couriernew", 26, bold=True)
         self.__title_font = pygame.font.SysFont("couriernew", 36, bold=True)
-        self.__next_button = Button(570, 510, 220, 50, "CONTINUE")
+        self.__next_button = Button(
+            CENTER_OF_SCREEN[0] - CONTINUE_WIDTH / 2,
+            CONTINUE_Y, 
+            CONTINUE_WIDTH,
+            CONTINUE_HEIGHT,
+            "CONTINUE"
+        )
         self.__next_scene = None
 
     def draw(self, screen, events):
