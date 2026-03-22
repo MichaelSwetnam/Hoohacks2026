@@ -3,6 +3,9 @@ import pygame
 from components.Button import Button
 from scene import SceneName, Scene
 
+from random import random
+from math import floor
+
 from constants import SCREEN_WIDTH, SCREEN_HEIGHT, TIME_BAR_COLOR
 from scenes.main_game.health import draw_health, calculate_enemy_bounding, calculate_player_bounding, HEART_SIZE
 from scenes.main_game.character import Character, SpriteName
@@ -10,6 +13,14 @@ from load_image import load_image
 
 from components.LoadingBar import LoadingBar
 
+def get_random_enemy_sprite():
+    rand = floor(random() * 3)
+    if rand == 0:
+        return SpriteName.ENEMY_1
+    elif rand == 1:
+        return SpriteName.ENEMY_2
+    else:
+        return SpriteName.ENEMY_3
 
 BACKGROUND = load_image("saloon_night.jpg", pygame.Vector2(SCREEN_WIDTH, SCREEN_HEIGHT))
 LOADING_BAR_MARGIN = 20
@@ -33,7 +44,8 @@ class MainGame(Scene):
 
     def __init__(self, level: int):
         self.__level = level
-        self.__enemy = Character(SpriteName.ENEMY_1)
+
+        self.__enemy = Character(get_random_enemy_sprite())
         self.__player = Character(SpriteName.PLAYER)
 
         self.__is_player_alive = True
