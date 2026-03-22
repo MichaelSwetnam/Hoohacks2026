@@ -79,6 +79,8 @@ PLAYER_RECT = pygame.Rect(
 DAMAGE_ATTACK = 0.1 * 1000
 DAMAGE_RECOVERY = 0.2 * 1000
 DAMAGE_POWER = 50
+FINAL_HIT_MULT = 3
+FINAL_HIT_TIME_SLOW = 2
 
 # Attack animation
 ATTACK_DURATION = 0.5 * 1000
@@ -95,6 +97,7 @@ class Character:
     __last_hit: int
     __hit_shake: pygame.Vector2
     __last_attack: int
+    __time_slow: int
 
     def __init__(self, sprite: SpriteName):
         self.__sprite = sprite
@@ -109,14 +112,33 @@ class Character:
 
         self.__last_hit = 0
         self.__last_attack = 0
+        self.__time_slow = 1
         self.__hit_shake = pygame.Vector2(0, 0)
 
-    def hit(self):
+    def hit(self, final_hit: bool):
         self.__last_hit = pygame.time.get_ticks()
-        self.__hit_shake = pygame.Vector2(random() * DAMAGE_POWER, random() * DAMAGE_POWER)
+        self.__hit_shake = pygame.Vector2(
+            random() * DAMAGE_POWER * (FINAL_HIT_MULT if final_hit else 1),
+            random() * DAMAGE_POWER * (FINAL_HIT_MULT if final_hit else 1)
+        )
+
+        if final_hit: self.__time_slow = FINAL_HIT_TIME_SLOW
 
     def attack(self):
         self.__last_attack = pygame.time.get_ticks()
+
+    def is_damage_running(self) -> bool:
+        now = pygame.time.get_ticks()
+        damageElapsed = now - self.__last_hit
+        return damageElapsed <= (DAMAGE_ATTACK + DAMAGE_RECOVERY) * self.__time_slow
+
+    def is_attack_running(self) -> bool:
+        now = pygame.time.get_ticks()
+        attackElapsed = now - self.__last_attack
+        return attackElapsed <= ATTACK_DURATION * self.__time_slow
+
+    def is_animation_running(self):
+        return self.is_damage_running() or self.is_attack_running()
 
     def __render(self, screen: pygame.Surface, offset: pygame.Vector2):
          # Apply offset to rect
@@ -136,8 +158,8 @@ class Character:
 
         offset = pygame.Vector2(0, 0)
 
-        isDamage = damageElapsed <= DAMAGE_ATTACK + DAMAGE_RECOVERY
-        isAttack = attackElapsed <=  ATTACK_DURATION
+        isDamage = self.is_damage_running()
+        isAttack = self.is_attack_running()
 
         # Playing idle animation
         if not isDamage and not isAttack:
@@ -153,17 +175,19 @@ class Character:
 
         # Playing damage    
         self.__state = SpriteState.DAMAGE
-
+        
         # HIT ATTACK PHASE (shake outward)
-        if damageElapsed < DAMAGE_ATTACK:
-            t = damageElapsed / DAMAGE_ATTACK
-            offset = lerp(pygame.Vector2(0, 0), self.__hit_shake, t)
+        totalAttackDuration = DAMAGE_ATTACK * self.__time_slow
+        totalRecoveryDuration = DAMAGE_RECOVERY * self.__time_slow
 
-        # HIT RECOVERY PHASE (shake returns to normal)
+        if damageElapsed < totalAttackDuration:
+            # 0 → 1 over the (slowed) attack phase
+            t = damageElapsed / totalAttackDuration
+            offset = lerp(pygame.Vector2(0, 0), self.__hit_shake, t)
         else:
-            t = (damageElapsed - DAMAGE_ATTACK) / DAMAGE_RECOVERY
+            # 0 → 1 over the (slowed) recovery phase
+            recoveryElapsed = damageElapsed - totalAttackDuration
+            t = recoveryElapsed / totalRecoveryDuration
             offset = lerp(self.__hit_shake, pygame.Vector2(0, 0), t)
 
         self.__render(screen, offset)
-
-       
