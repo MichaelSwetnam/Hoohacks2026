@@ -29,6 +29,6 @@ class StartMenu(Scene):
 
     def next_scene(self):
         if self.__start_button.isClicked:
-            return SceneName.MAIN_GAME
+            return SceneName.NARRATOR
 
     pass

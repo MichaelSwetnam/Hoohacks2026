@@ -3,6 +3,8 @@ import pygame
 from scenes.start_menu import StartMenu
 from scenes.main_game import MainGame
 from scenes.end_menu import EndMenu
+from scenes.narrator import Narrator
+from scenes.decision import Decision
 
 from scene import Scene, SceneName
 
@@ -23,6 +25,10 @@ def get_scene(sceneRef: SceneName):
         return MainGame(1)
     elif sceneRef == SceneName.EXIT_MENU_LOST:
         return EndMenu(False)
+    elif sceneRef == SceneName.NARRATOR:
+        return Narrator()
+    elif sceneRef == SceneName.DECISION:
+        return Decision()
     else:
         return EndMenu(True)
 

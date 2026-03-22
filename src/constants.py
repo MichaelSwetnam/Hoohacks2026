@@ -8,6 +8,7 @@ TIME_BAR_COLOR = (95, 159, 250)
 HEART_ALIVE = "heart.png"
 HEART_DEAD = "heart_dead.png"
 WHEAT_FIELDS_BACKGROUND = "wheat_fields.jpg"
+OLD_PAPER = "oldpaper.png"
 
 LOGO = "logo.png"
 LOGO_WIDTH = 240 * 3
