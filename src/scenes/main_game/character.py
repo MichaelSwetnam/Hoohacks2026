@@ -59,6 +59,7 @@ def get_sprite_asset(name: SpriteName, state: SpriteState, flipped: bool) -> pyg
     if flipped:
         surface = pygame.transform.flip(surface, flipped, False)
 
+    ASSET_CACHE[asset_name] = surface
     return surface
 
 ENEMY_RECT = pygame.Rect(
@@ -74,9 +75,13 @@ PLAYER_RECT = pygame.Rect(
     SIZE_Y
 )
 
-HIT_ATTACK = 0.05 * 1000
-HIT_RECOVERY = 0.1 * 1000
-HIT_POWER = 50
+# Damage animation
+DAMAGE_ATTACK = 0.1 * 1000
+DAMAGE_RECOVERY = 0.2 * 1000
+DAMAGE_POWER = 50
+
+# Attack animation
+ATTACK_DURATION = 0.5 * 1000
 
 def lerp(a: pygame.Vector2, b: pygame.Vector2, t: float):
     return a + (b - a) * t
@@ -89,6 +94,7 @@ class Character:
 
     __last_hit: int
     __hit_shake: pygame.Vector2
+    __last_attack: int
 
     def __init__(self, sprite: SpriteName):
         self.__sprite = sprite
@@ -102,37 +108,62 @@ class Character:
             self.__rect = ENEMY_RECT
 
         self.__last_hit = 0
+        self.__last_attack = 0
         self.__hit_shake = pygame.Vector2(0, 0)
 
     def hit(self):
         self.__last_hit = pygame.time.get_ticks()
-        self.__hit_shake = pygame.Vector2(random() * HIT_POWER, random() * HIT_POWER)
+        self.__hit_shake = pygame.Vector2(random() * DAMAGE_POWER, random() * DAMAGE_POWER)
 
-    def draw(self, screen: pygame.Surface, events: list[pygame.event.Event]):
-        now = pygame.time.get_ticks()
-        elapsed = now - self.__last_hit
-        offset = pygame.Vector2(0, 0)
+    def attack(self):
+        self.__last_attack = pygame.time.get_ticks()
 
-        if elapsed < HIT_ATTACK + HIT_RECOVERY:
-            # HIT ATTACK PHASE (shake outward)
-            if elapsed < HIT_ATTACK:
-                t = elapsed / HIT_ATTACK
-                offset = lerp(pygame.Vector2(0, 0), self.__hit_shake, t)
-
-            # HIT RECOVERY PHASE (shake returns to normal)
-            else:
-                t = (elapsed - HIT_ATTACK) / HIT_RECOVERY
-                offset = lerp(self.__hit_shake, pygame.Vector2(0, 0), t)
-
-        # Apply offset to rect
+    def __render(self, screen: pygame.Surface, offset: pygame.Vector2):
+         # Apply offset to rect
         position_rect = pygame.Rect(
             self.__rect.x + offset.x,
             self.__rect.y + offset.y,
             self.__rect.width,
             self.__rect.height
         )
-
-        color = (0, 255, 0) if self.__sprite == SpriteName.PLAYER else (255, 0, 0)
         
         screen.blit(get_sprite_asset(self.__sprite, self.__state, self.__flipped), position_rect)
-        # pygame.draw.rect(screen, color, position_rect)
+
+    def draw(self, screen: pygame.Surface, events: list[pygame.event.Event]):
+        now = pygame.time.get_ticks()
+        damageElapsed = now - self.__last_hit
+        attackElapsed = now - self.__last_attack
+
+        offset = pygame.Vector2(0, 0)
+
+        isDamage = damageElapsed <= DAMAGE_ATTACK + DAMAGE_RECOVERY
+        isAttack = attackElapsed <=  ATTACK_DURATION
+
+        # Playing idle animation
+        if not isDamage and not isAttack:
+            self.__state = SpriteState.IDLE
+            self.__render(screen, offset)
+            return
+
+        # Playing hurt
+        if isAttack:
+            self.__state = SpriteState.SHOOT
+            self.__render(screen, offset)
+            return
+
+        # Playing damage    
+        self.__state = SpriteState.DAMAGE
+
+        # HIT ATTACK PHASE (shake outward)
+        if damageElapsed < DAMAGE_ATTACK:
+            t = damageElapsed / DAMAGE_ATTACK
+            offset = lerp(pygame.Vector2(0, 0), self.__hit_shake, t)
+
+        # HIT RECOVERY PHASE (shake returns to normal)
+        else:
+            t = (damageElapsed - DAMAGE_ATTACK) / DAMAGE_RECOVERY
+            offset = lerp(self.__hit_shake, pygame.Vector2(0, 0), t)
+
+        self.__render(screen, offset)
+
+       

@@ -59,12 +59,14 @@ class MainGame(Scene):
         if hit_player.isClicked:
             self.__player_health -= 1
             self.__player.hit()
+            self.__enemy.attack()
 
         hit_enemy = Button(600, 500, 40, 40, "Hit Enemy")
         hit_enemy.draw(screen, events)
         if hit_enemy.isClicked:
             self.__enemy_health -= 1
             self.__enemy.hit()
+            self.__player.attack()
                                
         # Update state
         if self.__player_health <= 0:
