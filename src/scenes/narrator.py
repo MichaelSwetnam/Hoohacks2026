@@ -23,7 +23,7 @@ class Narrator(Scene):
     def __init__(self):
         self.__font = pygame.font.SysFont("couriernew", 26, bold=True)
         self.__title_font = pygame.font.SysFont("couriernew", 36, bold=True)
-        self.__next_button = Button(570, 510, 160, 50, "CONTINUE")
+        self.__next_button = Button(570, 510, 220, 50, "CONTINUE")
         self.__next_scene = None
 
     def draw(self, screen, events):
