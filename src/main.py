@@ -3,6 +3,8 @@ import pygame
 from scenes.start_menu import StartMenu
 from scenes.main_game import MainGame
 from scenes.end_menu import EndMenu
+from scenes.duel_scene import DuelScene    # ← ADD THIS IMPORT
+
 
 from scene import Scene, SceneName
 
@@ -21,6 +23,8 @@ def get_scene(sceneRef: SceneName):
         return StartMenu()
     elif sceneRef == SceneName.MAIN_GAME:
         return MainGame(1)
+    elif sceneRef == SceneName.DUEL:           # ← ADD THESE TWO LINES
+        return DuelScene()                     # ←
     elif sceneRef == SceneName.EXIT_MENU_LOST:
         return EndMenu(False)
     else:

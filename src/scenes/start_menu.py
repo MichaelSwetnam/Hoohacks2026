@@ -1,7 +1,7 @@
 from pygame import Vector2
 from components.Button import Button
 from scene import Scene, SceneName
-from draw_menu_background import draw_menu_background
+from draw_menu_background import draw_darkened_background
 from load_image import load_image
 
 from constants import LOGO_WIDTH, LOGO_HEIGHT, LOGO, CENTER_OF_SCREEN
@@ -21,7 +21,8 @@ class StartMenu(Scene):
         pass
 
     def draw(self, screen, events):
-        draw_menu_background(screen)
+        draw_darkened_background(screen)
+
 
         screen.blit(LOGO, (CENTER_OF_SCREEN[0] - LOGO_WIDTH / 2, START_BUTTON_Y - LOGO_HEIGHT - 30))    
 
@@ -29,6 +30,6 @@ class StartMenu(Scene):
 
     def next_scene(self):
         if self.__start_button.isClicked:
-            return SceneName.MAIN_GAME
+            return SceneName.DUEL  
 
     pass

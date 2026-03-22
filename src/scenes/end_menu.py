@@ -1,7 +1,7 @@
 from components.Button import Button
 from scene import Scene, SceneName
 import pygame
-from draw_menu_background import draw_menu_background
+from draw_menu_background import draw_darkened_background
 
 class EndMenu(Scene):
     __end_button: Button
@@ -14,7 +14,7 @@ class EndMenu(Scene):
 
 
     def draw(self, screen, events):
-        draw_menu_background(screen)
+        draw_darkened_background(screen)
 
         label = None
         if self.__has_won: 

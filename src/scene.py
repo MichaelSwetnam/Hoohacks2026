@@ -6,6 +6,7 @@ class SceneName(enum.Enum):
     MAIN_GAME = 1
     EXIT_MENU_WON = 2
     EXIT_MENU_LOST = 3
+    DUEL = 4 # changed
 
 
 class Scene:
